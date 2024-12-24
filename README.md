@@ -3,7 +3,7 @@
 
 ## Introduction
 
-As cool developers, we want to use the latest, coolest libraries. 
+As cool developers, we want to use the latest, coolest libraries. And these nice libraries are changing faster than LLM knowledge cutoff dates. It may be a great code-producing LLM but if the knowledge cutoff date is before the updated code, the LLM will generate the wrong, outdated code. 
 
 The purpose of this repo is to have LLM readable documentation for documentation that would not otherwise be accessible. 
 
