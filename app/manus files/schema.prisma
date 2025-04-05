@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String              @id @default(uuid())
+  email             String              @unique
+  name              String?
+  avatarUrl         String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  subscriptions     Subscription[]
+  connectedMailboxes ConnectedMailbox[]
+  usageMetrics      UsageMetric[]
+  billingHistory    BillingHistory[]
+}
+
+model Subscription {
+  id                 String   @id @default(uuid())
+  userId             String
+  status             String
+  plan               String
+  priceId            String?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ConnectedMailbox {
+  id             String       @id @default(uuid())
+  userId         String
+  provider       String
+  email          String
+  accessToken    String?
+  refreshToken   String?
+  tokenExpiresAt DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usageMetrics   UsageMetric[]
+}
+
+model UsageMetric {
+  id           String           @id @default(uuid())
+  userId       String
+  mailboxId    String?
+  feature      String
+  tokensUsed   Int              @default(0)
+  requestCount Int              @default(0)
+  createdAt    DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mailbox      ConnectedMailbox? @relation(fields: [mailboxId], references: [id], onDelete: SetNull)
+}
+
+model BillingHistory {
+  id              String   @id @default(uuid())
+  userId          String
+  amount          Int
+  currency        String
+  status          String
+  description     String?
+  paymentIntentId String?
+  invoiceId       String?
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Counter {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  value     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model AccessLog {
+  id         Int      @id @default(autoincrement())
+  ip         String?
+  path       String?
+  accessedAt DateTime @default(now())
+}

@@ -1,0 +1,156 @@
+# Moringa: AI-Assisted Messaging Platform
+
+## Overview
+Moringa is a platform with two main components:
+1. A desktop email client built with Tauri 2.0 and Vue
+2. A Next.js web application for account management, payments, and usage tracking
+
+## Desktop Email Client (Tauri 2.0 + Vue)
+
+### Core Features
+- Clean, minimal design inspired by Apple's Mail app
+- Integration with multiple email providers (Gmail, Microsoft, etc.)
+- Standard email functionality (read, compose, send, etc.)
+- AI-assisted email responses
+
+### AI Response Workflow
+1. User opens an email and clicks "Respond with AI"
+2. User enters a brief description of what they want to say
+3. App sends email thread context + user's intent to Moringa API
+4. API returns AI-drafted response using Anthropic's API
+5. User can edit the draft before sending
+
+### Additional AI Features
+- Option to respond normally without AI
+- "Improve my response" feature to enhance user-written drafts
+
+### Authentication Flow
+- Login screen to authenticate with Moringa web account
+- Session management to maintain API access
+- Subscription validation before allowing AI features
+
+## Web Application (Next.js)
+
+### Authentication
+- Email and Google account signup/login
+- Supabase for authentication management
+- User account dashboard
+
+### Database
+- PostgreSQL database
+- Prisma ORM for database operations
+- Store user data, subscription info, and usage metrics
+
+### Payment System
+- Stripe integration for handling payments
+- Subscription options:
+  - $9.99/month or $99/year for the base plan
+  - Additional $9.99/month per mailbox connected
+
+### API Endpoints
+1. **Authentication Endpoint**
+   - Login/validate users from desktop client
+   
+2. **Email Draft Endpoint**
+   - Input: Email thread history + user's intent
+   - Processing: Send to Anthropic API with appropriate context
+   - Output: JSON with drafted email response
+   - Track: Token usage and email count
+
+3. **Email Improvement Endpoint**
+   - Input: Original draft written by user + email thread history
+   - Processing: Analyze existing content and improve using Anthropic API
+   - Output: JSON with improved version while maintaining user's voice/intent
+   - Track: Token usage and improvement request count
+
+### User Dashboard
+- Subscription management
+- Usage statistics
+- Connected mailboxes
+- Billing history
+
+## Testing Strategy
+
+### Automated Testing
+
+1. **Unit Tests**
+   - Test individual components in isolation
+   - Mock API responses for predictable testing
+   - Test Vue components with Vue Test Utils
+   - Test Next.js API routes with Jest
+
+2. **Integration Tests**
+   - Test authentication flow between desktop and web app
+   - Test email provider integration
+   - Test API communication between client and server
+   - Test Stripe payment flow
+
+3. **AI-Specific Tests**
+
+   - **Input Validation Tests**
+     - Verify proper handling of malformed email threads
+     - Test with emails in different languages
+     - Test with various email formats (plain text, HTML, etc.)
+     - Test with different lengths of email threads
+
+   - **Response Quality Tests**
+     - Create test suite of sample emails with expected response styles
+     - Evaluate response relevance to the original email
+     - Test tone matching based on user intent
+     - Measure contextual awareness across email threads
+
+   - **Prompt Engineering Tests**
+     - Optimize prompts sent to Anthropic API
+     - Test different instruction formats for consistent results
+     - Evaluate token usage efficiency
+     - Test handling of sensitive information
+
+   - **Edge Case Testing**
+     - Test with extremely short/long emails
+     - Test with technical jargon or specialized vocabulary
+     - Test with emails containing complex formatting
+     - Test with limited context scenarios
+
+4. **User Experience Tests**
+   - A/B testing of different AI suggestion interfaces
+   - Measure time saved using AI vs. manual responses
+   - Track edit rates of AI-generated content
+   - Monitor user satisfaction metrics
+
+### Manual QA & Testing
+
+1. **Sandbox Environment**
+   - Create a controlled testing environment with synthetic email data
+   - Simulate various email providers and their quirks
+   - Test authorization flows with test accounts
+
+2. **Human Evaluation**
+   - Blind tests comparing AI responses to human-written ones
+   - Expert review of AI-generated content quality
+   - User acceptance testing with focus groups
+
+3. **Performance Testing**
+   - Response time benchmarks for AI endpoints
+   - Load testing for concurrent users
+   - Memory usage in desktop application
+   - Token usage optimization
+
+### Continuous Improvement Loop
+
+1. **Feedback Collection**
+   - Add feedback buttons on AI-generated responses
+   - Implement user rating system for response quality
+   - Log when users make substantial edits to AI suggestions
+
+2. **Analytics Implementation**
+   - Track successful vs. discarded AI responses
+   - Analyze patterns in user edits to improve AI output
+   - Monitor token usage efficiency
+   - Identify common failure modes
+
+3. **Iterative Model Improvement**
+   - Use collected feedback to refine prompts
+   - Implement context window optimization techniques
+   - Create specialized handling for detected email types
+   - Fine-tune response style based on user preferences
+
